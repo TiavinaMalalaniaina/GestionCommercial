@@ -1,0 +1,26 @@
+
+
+PAGE 1: demande de produit
+	-récupération de tous les produits
+	-insertion de demande
+
+PAGE 2: validation de demande
+	-connection en tant que chef de département
+	-validation de demande
+
+	18 - 11- 2023(verification)
+
+Ok	-maka ny liste produit rehetra
+	-miinsert request sy an'ilay produit anaty RequestDetail
+
+Ok	-maka an'ilay RequestDetail rehetra isaka ny request
+OK-verification hoe afaka mivalide request ve ilay olona
+Ok-updatena ilay resquest sy RequestDetail apres validation
+
+Ok-maka an'ilay RequestDetail rehetra par produit et par department
+
+-miinsert proforma & miinsert ProformaDetail
+
+-mii-afficher ny proforma par fournisseur
+
+

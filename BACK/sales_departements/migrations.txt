@@ -1,0 +1,1 @@
+dotnet ef dbcontext scaffold "Host=localhost;Database=sales_departements;Username=postgres;Password=malalaniaina" Npgsql.EntityFrameworkCore.PostgreSQL -o Models -c SalesDepartementsContext
