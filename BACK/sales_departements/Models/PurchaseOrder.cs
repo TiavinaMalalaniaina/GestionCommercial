@@ -32,6 +32,7 @@ public partial class PurchaseOrder
         }
     }
 
+
     public List<PurchaseOrder> GetPurchaseOrdersValidated(SalesDepartementsContext context) {
         List<PurchaseOrder> purchaseOrders = context.PurchaseOrders.Where(p => p.Validation == 20).ToList();
         for (var i = 0; i < purchaseOrders.Count; i++)

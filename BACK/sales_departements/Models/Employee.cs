@@ -11,7 +11,7 @@ public partial class Employee
     public string? PersonId { get; set; }
 
     public string? DepartmentId { get; set; }
-
+    public string? DepartmentHeadId { get; set; }
     public DateOnly? HireDate { get; set; }
 
     public string? JobTitle { get; set; }
@@ -22,11 +22,12 @@ public partial class Employee
     public Boolean Daf { get; set; }
 
     public virtual Department? Department { get; set; }
+    public virtual Department? DepartmentHead { get; set; }
 
     public virtual Person? Person { get; set; }
 
-    public Employee GetEmployeeByPersonId(SalesDepartementsContext context, string personId) {
-        return context.Employees.FirstOrDefault(e => e.PersonId == personId);
+    public Employee GetEmployeeById(SalesDepartementsContext context, string employeeId) {
+        return context.Employees.Find(employeeId);
     }
     public List<Employee> GetEmployees(SalesDepartementsContext context) {
         return context.Employees.ToList();
@@ -39,8 +40,12 @@ public partial class Employee
         {
             if (email.Equals(employee.Email)) {
                 employeetWithEmail = employee;
-                if (password.Equals(employee.Password))
+                if (password.Equals(employee.Password)) {
+                    employee.Department = new Department().GetDepartment(context, employee.DepartmentId);
+                    employee.Person = Person.GetPerson(context, employee.PersonId);
+                    employee.DepartmentHead = new Department().GetDepartment(context, employee.DepartmentHeadId);
                     return employee;
+                }
 
             }
         }
@@ -49,34 +54,40 @@ public partial class Employee
         throw new Exception("Your password is incorrcet");
     }
 
-    public int GetEmployeeType(SalesDepartementsContext context) {
-        List<Department> departments = new Department().GetDepartments(context);
+    public int GetEmployeeType() {
 
         if(Daf)
             return 2;
-        foreach (Department department in departments)
-        {
-            if(PersonId.Equals(department.DepartmentHeadId))
-                return 1;
+        if(!string.IsNullOrEmpty(DepartmentHeadId)){
+            return 1;
         }
+
         return 0;
     }
 
     public Dictionary<int, string> GetEmployeeTypeName() {
         Dictionary<int, string> keyValuePairs= new();
-        keyValuePairs.Add(1,"employee");
-        keyValuePairs.Add(2,"chef de departement");
-        keyValuePairs.Add(3,"Directeur administratif financier");
+        keyValuePairs.Add(0,"employee");
+        keyValuePairs.Add(1,"chef de departement");
+        keyValuePairs.Add(2,"Directeur administratif financier");
 
         return keyValuePairs;
     }
 
-    public void CanValidate(SalesDepartementsContext context) {
-        int type = GetEmployeeType(context);
+    public void CanValidateRequest() {
+        int type = GetEmployeeType();
         Dictionary<int, string> keyValuePairs = GetEmployeeTypeName();
         if (type < 1)
             throw new Exception("Le "+keyValuePairs[type]+" ne peut pas le valider");
     }
+
+    public void CanValidatePurcahaseOrder() {
+        int type = GetEmployeeType();
+        Dictionary<int, string> keyValuePairs = GetEmployeeTypeName();
+        if (type < 2)
+            throw new Exception("Le "+keyValuePairs[type]+" ne peut pas le valider");
+    }
+
 
     public Employee GetEmployee(SalesDepartementsContext context, string employeeId) {
         return context.Employees.Find(employeeId);

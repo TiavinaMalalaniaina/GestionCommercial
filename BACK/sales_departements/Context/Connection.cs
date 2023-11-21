@@ -6,7 +6,7 @@ public class Connection
 {
     private readonly string Host =  "localhost";
     private readonly string User =  "postgres";
-    private readonly string Password =  "malalaniaina";
+    private readonly string Password =  "Etu002057";
     private readonly string Database =  "sales_departement";
 
     public NpgsqlConnection Connect() {

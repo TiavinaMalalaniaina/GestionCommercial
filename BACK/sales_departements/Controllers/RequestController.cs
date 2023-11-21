@@ -22,9 +22,9 @@ public class RequestController : Controller
         try
         {
             SalesDepartementsContext context = new ();
-            List<Request> requests = new Request().GetRequestsNoValidated(context);
-            List<object> requets1 = new (requests);
-            //return Service.Serialize(requets1);
+
+            string employeeId = new Session().GetSession();
+            List<Request> requests = new Request().GetRequestsNoValidatedByDepartement(context, employeeId);
             data = requests;
         }
         catch (Exception e)
@@ -44,9 +44,31 @@ public class RequestController : Controller
         try
         {
             SalesDepartementsContext context = new ();
-            List<Request> requests = new Request().GetRequestsValidated(context);
-            List<object> requets1 = new (requests);
-            //return Service.Serialize(requets1);
+
+            string employeeId = new Session().GetSession();
+            List<Request> requests = new Request().GetRequestsValidatedByDepartement(context, employeeId);
+            data = requests;
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e.Message);
+            exception = e.Message;
+        }
+
+        return new Bag(exception, data);
+    }
+
+    [HttpGet]
+    [Route("get-all-requests-send-by-self")]
+    public Bag GetAllRequests() {
+        string? exception = null;
+        object? data = null;
+        try
+        {
+            SalesDepartementsContext context = new ();
+
+            string employeeId = new Session().GetSession();
+            List<Request> requests = new Request().GetRequestsSendBySelf(context, "EMP00001");
             data = requests;
         }
         catch (Exception e)
@@ -61,20 +83,19 @@ public class RequestController : Controller
     [HttpPost]
     [Route("create")]
     public string? Create([FromBody] List<RequestDetail> requestDetails) {
-        Console.WriteLine("ENTRY");
         string? strings = null;
         try {
             SalesDepartementsContext context = new();
 
-            string? departmentId = "DEP00001";
-            string? employeeId = "EMP00001";
+            string? employeeId = new Session().GetSession();
+            Employee employee = new Employee().GetEmployee(context, employeeId);
+            string? departmentId = employee.DepartmentId;
+
 
             DateTime createdAt = DateTime.Now;
 
             string requestId = new Request(departmentId, createdAt,employeeId).Create(context);
-            Console.WriteLine(requestId + "request");
 
-            // List<RequestDetail> requestDetails = (List<RequestDetail>)JsonConvert.DeserializeObject(requestDetailJson);
             new RequestDetail().Creates(context, requestDetails, requestId);
             Console.WriteLine(requestId);
             context.SaveChanges();
@@ -95,13 +116,9 @@ public class RequestController : Controller
         try {
             SalesDepartementsContext context = new();
 
-            string personId = new Session().GetSession();
-            Console.WriteLine(personId);
-            // var p = HttpContext.Session.GetString("personId");
-            // Console.WriteLine("kkkk"+p+"oui");
-            Employee employee = new Employee().GetEmployeeByPersonId(context, personId);
-            employee.CanValidate(context);
-
+            string employeeId = new Session().GetSession();
+            Employee employee = new Employee().GetEmployeeById(context, employeeId);
+            employee.CanValidateRequest();
             new Request().UpdateIsValidate(context, model.RequestId);
             new RequestDetail().UpdateIsValidates(context, model.RequestDetailsId);
 
