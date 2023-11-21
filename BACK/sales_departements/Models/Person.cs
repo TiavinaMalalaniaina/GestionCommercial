@@ -20,9 +20,9 @@ public partial class Person
 
     public string? Address { get; set; }
 
-    public virtual ICollection<Department> Departments { get; } = new List<Department>();
+    // public virtual ICollection<Department> Departments { get; } = new List<Department>();
 
-    public virtual Employee? Employee { get; set; }
+    // public virtual Employee? Employee { get; set; }
 
     public static Person GetPerson(SalesDepartementsContext context, String personId) {
         Person person = context.People.Find(personId);

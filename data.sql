@@ -1,5 +1,20 @@
 CREATE SCHEMA IF NOT EXISTS "public";
 
+CREATE OR REPLACE FUNCTION public.custom_seq(in_prefix character varying, in_sequence_name character varying, in_digit_count integer)
+ RETURNS character varying
+ LANGUAGE plpgsql
+AS $function$
+DECLARE
+    seq_value INT;
+    result VARCHAR;
+BEGIN
+    EXECUTE 'SELECT nextval(''' || in_sequence_name || '''::regclass)' INTO seq_value;
+    result := in_prefix || LPAD(seq_value::TEXT, in_digit_count, '0');
+    RETURN result;
+END;
+$function$
+;
+
 CREATE SEQUENCE "public".departement_seq START WITH 1 INCREMENT BY 1;
 
 CREATE SEQUENCE "public".employee_seq START WITH 1 INCREMENT BY 1;
@@ -26,7 +41,7 @@ CREATE SEQUENCE "public".supplier_product_seq START WITH 1 INCREMENT BY 1;
 
 CREATE SEQUENCE "public".supplier_seq START WITH 1 INCREMENT BY 1;
 
-CREATE  TABLE "public".person ( 
+CREATE  TABLE "public".person (
 	person_id            varchar DEFAULT custom_seq('PER'::character varying, 'person_seq'::character varying, 5) NOT NULL  ,
 	first_name           varchar(50)    ,
 	last_name            varchar(50)    ,
@@ -37,48 +52,48 @@ CREATE  TABLE "public".person (
 	CONSTRAINT person_pkey PRIMARY KEY ( person_id )
  );
 
-CREATE  TABLE "public".product ( 
+CREATE  TABLE "public".product (
 	product_id           varchar DEFAULT custom_seq('PRO'::character varying, 'product_seq'::character varying, 5) NOT NULL  ,
 	product_name         varchar(100)    ,
 	CONSTRAINT product_pkey PRIMARY KEY ( product_id ),
-	CONSTRAINT product_product_name_key UNIQUE ( product_name ) 
+	CONSTRAINT product_product_name_key UNIQUE ( product_name )
  );
 
-CREATE  TABLE "public"."session" ( 
+CREATE  TABLE "public"."session" (
 	"value"              varchar    ,
 	id                   integer DEFAULT nextval('session_id_seq'::regclass) NOT NULL  ,
 	CONSTRAINT pk_session PRIMARY KEY ( id )
  );
 
-CREATE  TABLE "public".supplier ( 
+CREATE  TABLE "public".supplier (
 	supplier_id          varchar DEFAULT custom_seq('SUP'::character varying, 'supplier_seq'::character varying, 5) NOT NULL  ,
 	name                 varchar(100)    ,
 	contact_email        varchar(100)    ,
 	contact_phone        varchar(20)    ,
 	address              varchar(255)    ,
 	CONSTRAINT supplier_pkey PRIMARY KEY ( supplier_id ),
-	CONSTRAINT supplier_name_key UNIQUE ( name ) 
+	CONSTRAINT supplier_name_key UNIQUE ( name )
  );
 
-CREATE  TABLE "public".supplier_product ( 
+CREATE  TABLE "public".supplier_product (
 	supplier_product_id  varchar DEFAULT custom_seq('SPR'::character varying, 'supplier_product_seq'::character varying, 5) NOT NULL  ,
 	supplier_id          varchar    ,
 	product_id           varchar    ,
 	CONSTRAINT supplier_product_pkey PRIMARY KEY ( supplier_product_id ),
 	CONSTRAINT supplier_product_product_id_fkey FOREIGN KEY ( product_id ) REFERENCES "public".product( product_id )   ,
-	CONSTRAINT supplier_product_supplier_id_fkey FOREIGN KEY ( supplier_id ) REFERENCES "public".supplier( supplier_id )   
+	CONSTRAINT supplier_product_supplier_id_fkey FOREIGN KEY ( supplier_id ) REFERENCES "public".supplier( supplier_id )
  );
 
-CREATE  TABLE "public".department ( 
+CREATE  TABLE "public".department (
 	department_id        varchar DEFAULT custom_seq('DEP'::character varying, 'departement_seq'::character varying, 5) NOT NULL  ,
 	department_name      varchar(100)    ,
 	department_head_id   varchar    ,
 	CONSTRAINT department_pkey PRIMARY KEY ( department_id ),
 	CONSTRAINT department_department_name_key UNIQUE ( department_name ) ,
-	CONSTRAINT department_department_head_id_fkey FOREIGN KEY ( department_head_id ) REFERENCES "public".person( person_id )   
+	CONSTRAINT department_department_head_id_fkey FOREIGN KEY ( department_head_id ) REFERENCES "public".person( person_id )
  );
 
-CREATE  TABLE "public".employee ( 
+CREATE  TABLE "public".employee (
 	employee_id          varchar DEFAULT custom_seq('EMP'::character varying, 'employee_seq'::character varying, 5) NOT NULL  ,
 	person_id            varchar    ,
 	department_id        varchar    ,
@@ -91,19 +106,19 @@ CREATE  TABLE "public".employee (
 	CONSTRAINT employee_pkey PRIMARY KEY ( employee_id ),
 	CONSTRAINT employee_person_id_key UNIQUE ( person_id ) ,
 	CONSTRAINT employee_department_id_fkey FOREIGN KEY ( department_id ) REFERENCES "public".department( department_id )   ,
-	CONSTRAINT employee_person_id_fkey FOREIGN KEY ( person_id ) REFERENCES "public".person( person_id )   
+	CONSTRAINT employee_person_id_fkey FOREIGN KEY ( person_id ) REFERENCES "public".person( person_id )
  );
 
-CREATE  TABLE "public".proforma ( 
+CREATE  TABLE "public".proforma (
 	proforma_id          varchar DEFAULT custom_seq('PRO'::character varying, 'proforma_seq'::character varying, 5) NOT NULL  ,
 	issue_date           date    ,
 	due_date             date    ,
 	supplier_id          varchar    ,
 	CONSTRAINT proforma_pkey PRIMARY KEY ( proforma_id ),
-	CONSTRAINT proforma_supplier_id_fkey FOREIGN KEY ( supplier_id ) REFERENCES "public".supplier( supplier_id )   
+	CONSTRAINT proforma_supplier_id_fkey FOREIGN KEY ( supplier_id ) REFERENCES "public".supplier( supplier_id )
  );
 
-CREATE  TABLE "public".proforma_details ( 
+CREATE  TABLE "public".proforma_details (
 	proforma_details_id  varchar DEFAULT custom_seq('PRD'::character varying, 'proforma_details_seq'::character varying, 5) NOT NULL  ,
 	proforma_id          varchar    ,
 	product_id           varchar    ,
@@ -111,20 +126,20 @@ CREATE  TABLE "public".proforma_details (
 	price                numeric(10,2)    ,
 	CONSTRAINT proforma_details_pkey PRIMARY KEY ( proforma_details_id ),
 	CONSTRAINT proforma_details_product_id_fkey FOREIGN KEY ( product_id ) REFERENCES "public".product( product_id )   ,
-	CONSTRAINT proforma_details_proforma_id_fkey FOREIGN KEY ( proforma_id ) REFERENCES "public".proforma( proforma_id )   
+	CONSTRAINT proforma_details_proforma_id_fkey FOREIGN KEY ( proforma_id ) REFERENCES "public".proforma( proforma_id )
  );
 
-CREATE  TABLE "public".purchase_order ( 
+CREATE  TABLE "public".purchase_order (
 	purchase_order_id    varchar DEFAULT custom_seq('PUR'::character varying, 'purchase_order_seq'::character varying, 5) NOT NULL  ,
 	created_at           timestamp(0) DEFAULT CURRENT_TIMESTAMP   ,
 	delivery_days        integer DEFAULT 30   ,
 	supplier_id          varchar    ,
 	validation           integer DEFAULT 10   ,
 	CONSTRAINT purchase_order_pkey PRIMARY KEY ( purchase_order_id ),
-	CONSTRAINT purchase_order_supplier_id_fkey FOREIGN KEY ( supplier_id ) REFERENCES "public".supplier( supplier_id )   
+	CONSTRAINT purchase_order_supplier_id_fkey FOREIGN KEY ( supplier_id ) REFERENCES "public".supplier( supplier_id )
  );
 
-CREATE  TABLE "public".purchase_order_details ( 
+CREATE  TABLE "public".purchase_order_details (
 	purchase_order_details_id varchar DEFAULT custom_seq('PUD'::character varying, 'purchase_order_details_seq'::character varying, 5) NOT NULL  ,
 	purchase_order_id    varchar    ,
 	product_id           varchar    ,
@@ -132,10 +147,10 @@ CREATE  TABLE "public".purchase_order_details (
 	price                numeric(10,2)    ,
 	CONSTRAINT purchase_order_details_pkey PRIMARY KEY ( purchase_order_details_id ),
 	CONSTRAINT purchase_order_details_product_id_fkey FOREIGN KEY ( product_id ) REFERENCES "public".product( product_id )   ,
-	CONSTRAINT purchase_order_details_purchase_order_id_fkey FOREIGN KEY ( purchase_order_id ) REFERENCES "public".purchase_order( purchase_order_id )   
+	CONSTRAINT purchase_order_details_purchase_order_id_fkey FOREIGN KEY ( purchase_order_id ) REFERENCES "public".purchase_order( purchase_order_id )
  );
 
-CREATE  TABLE "public".request ( 
+CREATE  TABLE "public".request (
 	request_id           varchar DEFAULT custom_seq('REQ'::character varying, 'request_seq'::character varying, 5) NOT NULL  ,
 	department_id        varchar    ,
 	created_at           date    ,
@@ -143,10 +158,10 @@ CREATE  TABLE "public".request (
 	employee_id          varchar    ,
 	CONSTRAINT request_pkey PRIMARY KEY ( request_id ),
 	CONSTRAINT request_department_id_fkey FOREIGN KEY ( department_id ) REFERENCES "public".department( department_id )   ,
-	CONSTRAINT fk_request_employee FOREIGN KEY ( employee_id ) REFERENCES "public".employee( employee_id )   
+	CONSTRAINT fk_request_employee FOREIGN KEY ( employee_id ) REFERENCES "public".employee( employee_id )
  );
 
-CREATE  TABLE "public".request_details ( 
+CREATE  TABLE "public".request_details (
 	request_details_id   varchar DEFAULT custom_seq('RED'::character varying, 'request_details_seq'::character varying, 5) NOT NULL  ,
 	request_id           varchar    ,
 	product_id           varchar    ,
@@ -157,23 +172,10 @@ CREATE  TABLE "public".request_details (
 	treated              boolean DEFAULT false NOT NULL  ,
 	CONSTRAINT request_details_pkey PRIMARY KEY ( request_details_id ),
 	CONSTRAINT request_details_product_id_fkey FOREIGN KEY ( product_id ) REFERENCES "public".product( product_id )   ,
-	CONSTRAINT request_details_request_id_fkey FOREIGN KEY ( request_id ) REFERENCES "public".request( request_id )   
+	CONSTRAINT request_details_request_id_fkey FOREIGN KEY ( request_id ) REFERENCES "public".request( request_id )
  );
 
-CREATE OR REPLACE FUNCTION public.custom_seq(in_prefix character varying, in_sequence_name character varying, in_digit_count integer)
- RETURNS character varying
- LANGUAGE plpgsql
-AS $function$
-DECLARE
-    seq_value INT;
-    result VARCHAR;
-BEGIN
-    EXECUTE 'SELECT nextval(''' || in_sequence_name || '''::regclass)' INTO seq_value;
-    result := in_prefix || LPAD(seq_value::TEXT, in_digit_count, '0');
-    RETURN result;
-END;
-$function$
-;
+
 
 CREATE VIEW "public".v_product_necessary AS  SELECT e.product_id,
     e.quantity,

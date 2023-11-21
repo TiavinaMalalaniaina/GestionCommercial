@@ -11,7 +11,7 @@ public partial class Employee
     public string? PersonId { get; set; }
 
     public string? DepartmentId { get; set; }
-
+    public string? DepartmentHeadId { get; set; }
     public DateOnly? HireDate { get; set; }
 
     public string? JobTitle { get; set; }
@@ -22,11 +22,12 @@ public partial class Employee
     public Boolean Daf { get; set; }
 
     public virtual Department? Department { get; set; }
+    public virtual Department? DepartmentHead { get; set; }
 
     public virtual Person? Person { get; set; }
 
-    public Employee GetEmployeeByPersonId(SalesDepartementsContext context, string personId) {
-        return context.Employees.FirstOrDefault(e => e.PersonId == personId);
+    public Employee GetEmployeeById(SalesDepartementsContext context, string employeeId) {
+        return context.Employees.Find(employeeId);
     }
     public List<Employee> GetEmployees(SalesDepartementsContext context) {
         return context.Employees.ToList();
@@ -39,8 +40,12 @@ public partial class Employee
         {
             if (email.Equals(employee.Email)) {
                 employeetWithEmail = employee;
-                if (password.Equals(employee.Password))
+                if (password.Equals(employee.Password)) {
+                    employee.Department = new Department().GetDepartment(context, employee.DepartmentId);
+                    employee.Person = Person.GetPerson(context, employee.PersonId);
+                    employee.DepartmentHead = new Department().GetDepartment(context, employee.DepartmentHeadId);
                     return employee;
+                }
 
             }
         }
@@ -56,7 +61,7 @@ public partial class Employee
             return 2;
         foreach (Department department in departments)
         {
-            if(PersonId.Equals(department.DepartmentHeadId))
+            if(!string.IsNullOrEmpty(DepartmentHeadId))
                 return 1;
         }
         return 0;
@@ -73,6 +78,7 @@ public partial class Employee
 
     public void CanValidate(SalesDepartementsContext context) {
         int type = GetEmployeeType(context);
+        Console.WriteLine("--"+type);
         Dictionary<int, string> keyValuePairs = GetEmployeeTypeName();
         if (type < 1)
             throw new Exception("Le "+keyValuePairs[type]+" ne peut pas le valider");

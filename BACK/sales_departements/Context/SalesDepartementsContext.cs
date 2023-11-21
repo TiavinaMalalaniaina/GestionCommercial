@@ -42,7 +42,7 @@ public partial class SalesDepartementsContext : DbContext
     public virtual DbSet<Session> Sessions { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        => optionsBuilder.UseNpgsql("Host=localhost;Database=sales_departement;Username=postgres;Password=malalaniaina");
+        => optionsBuilder.UseNpgsql("Host=localhost;Database=sales_departement;Username=postgres;Password=Etu002057");
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -55,7 +55,7 @@ public partial class SalesDepartementsContext : DbContext
                 .HasMaxLength(100)
                 .HasColumnName("value");
 
-           
+
         });
         modelBuilder.Entity<Department>(entity =>
         {
@@ -69,16 +69,16 @@ public partial class SalesDepartementsContext : DbContext
                 .HasDefaultValueSql("custom_seq('DEP'::character varying, 'departement_seq'::character varying, 5)")
                 .HasColumnType("character varying")
                 .HasColumnName("department_id");
-            entity.Property(e => e.DepartmentHeadId)
-                .HasColumnType("character varying")
-                .HasColumnName("department_head_id");
+            // entity.Property(e => e.DepartmentHeadId)
+            //     .HasColumnType("character varying")
+            //     .HasColumnName("department_head_id");
             entity.Property(e => e.DepartmentName)
                 .HasMaxLength(100)
                 .HasColumnName("department_name");
 
-            entity.HasOne(d => d.DepartmentHead).WithMany(p => p.Departments)
-                .HasForeignKey(d => d.DepartmentHeadId)
-                .HasConstraintName("department_department_head_id_fkey");
+            // entity.HasOne(d => d.DepartmentHead).WithMany(p => p.Departments)
+            //     .HasForeignKey(d => d.DepartmentHeadId)
+            //     .HasConstraintName("department_department_head_id_fkey");
         });
 
         modelBuilder.Entity<Employee>(entity =>
@@ -105,6 +105,9 @@ public partial class SalesDepartementsContext : DbContext
             entity.Property(e => e.DepartmentId)
                 .HasColumnType("character varying")
                 .HasColumnName("department_id");
+            entity.Property(e => e.DepartmentHeadId)
+                .HasColumnType("character varying")
+                .HasColumnName("department_head_id");
             entity.Property(e => e.HireDate).HasColumnName("hire_date");
             entity.Property(e => e.JobTitle)
                 .HasMaxLength(100)
@@ -118,13 +121,13 @@ public partial class SalesDepartementsContext : DbContext
             entity.Property(e => e.Daf)
                 .HasColumnName("daf");
 
-            entity.HasOne(d => d.Department).WithMany(p => p.Employees)
-                .HasForeignKey(d => d.DepartmentId)
-                .HasConstraintName("employee_department_id_fkey");
+            // entity.HasOne(d => d.Department).WithMany(p => p.Employees)
+            //     .HasForeignKey(d => d.DepartmentId)
+            //     .HasConstraintName("employee_department_id_fkey");
 
-            entity.HasOne(d => d.Person).WithOne(p => p.Employee)
-                .HasForeignKey<Employee>(d => d.PersonId)
-                .HasConstraintName("employee_person_id_fkey");
+            // entity.HasOne(d => d.Person).WithOne(p => p.Employee)
+            //     .HasForeignKey<Employee>(d => d.PersonId)
+            //     .HasConstraintName("employee_person_id_fkey");
         });
 
         modelBuilder.Entity<Person>(entity =>

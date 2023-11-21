@@ -95,15 +95,11 @@ public class RequestController : Controller
         try {
             SalesDepartementsContext context = new();
 
-            string personId = new Session().GetSession();
-            Console.WriteLine(personId);
-            // var p = HttpContext.Session.GetString("personId");
-            // Console.WriteLine("kkkk"+p+"oui");
-            Employee employee = new Employee().GetEmployeeByPersonId(context, personId);
+            string employeeId = new Session().GetSession();
+            Employee employee = new Employee().GetEmployeeById(context, employeeId);
             employee.CanValidate(context);
-
-            new Request().UpdateIsValidate(context, model.RequestId);
-            new RequestDetail().UpdateIsValidates(context, model.RequestDetailsId);
+            // new Request().UpdateIsValidate(context, model.RequestId);
+            // new RequestDetail().UpdateIsValidates(context, model.RequestDetailsId);
 
             context.SaveChanges();
         }
