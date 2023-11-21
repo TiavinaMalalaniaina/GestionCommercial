@@ -54,35 +54,40 @@ public partial class Employee
         throw new Exception("Your password is incorrcet");
     }
 
-    public int GetEmployeeType(SalesDepartementsContext context) {
-        List<Department> departments = new Department().GetDepartments(context);
+    public int GetEmployeeType() {
 
         if(Daf)
             return 2;
-        foreach (Department department in departments)
-        {
-            if(!string.IsNullOrEmpty(DepartmentHeadId))
-                return 1;
+        if(!string.IsNullOrEmpty(DepartmentHeadId)){
+            return 1;
         }
+
         return 0;
     }
 
     public Dictionary<int, string> GetEmployeeTypeName() {
         Dictionary<int, string> keyValuePairs= new();
-        keyValuePairs.Add(1,"employee");
-        keyValuePairs.Add(2,"chef de departement");
-        keyValuePairs.Add(3,"Directeur administratif financier");
+        keyValuePairs.Add(0,"employee");
+        keyValuePairs.Add(1,"chef de departement");
+        keyValuePairs.Add(2,"Directeur administratif financier");
 
         return keyValuePairs;
     }
 
-    public void CanValidate(SalesDepartementsContext context) {
-        int type = GetEmployeeType(context);
-        Console.WriteLine("--"+type);
+    public void CanValidateRequest() {
+        int type = GetEmployeeType();
         Dictionary<int, string> keyValuePairs = GetEmployeeTypeName();
         if (type < 1)
             throw new Exception("Le "+keyValuePairs[type]+" ne peut pas le valider");
     }
+
+    public void CanValidatePurcahaseOrder() {
+        int type = GetEmployeeType();
+        Dictionary<int, string> keyValuePairs = GetEmployeeTypeName();
+        if (type < 2)
+            throw new Exception("Le "+keyValuePairs[type]+" ne peut pas le valider");
+    }
+
 
     public Employee GetEmployee(SalesDepartementsContext context, string employeeId) {
         return context.Employees.Find(employeeId);

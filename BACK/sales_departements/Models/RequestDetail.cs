@@ -16,7 +16,7 @@ public partial class RequestDetail
     public int? Quantity { get; set; }
     public string? Reason { get; set; }
 
-    public bool Treated {get; set;}
+    public int Treated {get; set;}
 
     public virtual Product? Product { get; set; }
     public bool IsValidated { get; set; }
@@ -65,8 +65,10 @@ public partial class RequestDetail
     }
     public void UpdateIsValidate(SalesDepartementsContext context, string requestDetailId) {
         var requestDetailToUpdate = context.RequestDetails.Find(requestDetailId);
+        requestDetailToUpdate.Treated = -1;
         if (requestDetailToUpdate != null) {
             requestDetailToUpdate.IsValidated = true;
+            requestDetailToUpdate.Treated = 1;
         }
     }
 
@@ -115,11 +117,11 @@ public partial class RequestDetail
     }
 
     public void ValidateProductInRequestDetail(SalesDepartementsContext context, string productId) {
-        List<RequestDetail> requestDetails = context.RequestDetails.Where(r => r.ProductId == productId).ToList();
-        
+        List<RequestDetail> requestDetails = context.RequestDetails.Where(r => r.ProductId == productId && r.IsValidated).ToList();
+
         foreach (RequestDetail requestDetail in requestDetails)
         {
-            requestDetail.Treated = true;
+            requestDetail.Treated = 2;
         }
     }
 }

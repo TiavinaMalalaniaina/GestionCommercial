@@ -15,6 +15,9 @@ public class PurchaseOrderController : Controller
         try
         {
             SalesDepartementsContext context = new ();
+            string employeeId = new Session().GetSession();
+            Employee employee = new Employee().GetEmployee(context, employeeId);
+            employee.CanValidatePurcahaseOrder();
             new PurchaseOrder().ValidatePurchaseOrderAndTheirProducts(context, purchase_order_id);
             context.SaveChanges();
         }
@@ -72,7 +75,7 @@ public class PurchaseOrderController : Controller
         }
         catch (Exception e)
         {
-            exception = e.Message;            
+            exception = e.Message;
         }
         return new Bag(exception, data);
     }
@@ -89,7 +92,7 @@ public class PurchaseOrderController : Controller
         }
         catch (Exception e)
         {
-            exception = e.Message;            
+            exception = e.Message;
         }
         return new Bag(exception, data);
     }
