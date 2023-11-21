@@ -130,6 +130,63 @@ public class RequestController : Controller
         }
         return new Bag(exception, data);
     }
+ 
+    [HttpGet]
+    [Route("getAllByProduct")]
+    public string GetAllByProductsAndDepartment()
+    {
+        SalesDepartementsContext context = new SalesDepartementsContext();
+        var allData = context.VRequestCurves.ToList();
+
+        Dictionary<string, List<Dictionary<string, object>>> productsByProduct = new Dictionary<string, List<Dictionary<string, object>>>();
+
+        foreach (var item in allData)
+        {
+            if (!productsByProduct.ContainsKey(item.ProductId))
+            {
+                productsByProduct[item.ProductId] = new List<Dictionary<string, object>>();
+            }
+
+            var productData = productsByProduct[item.ProductId].FirstOrDefault(p => p.ContainsKey("department") && p["department"].Equals(item.DepartmentId));
+
+            if (productData != null)
+            {
+                if (productData.ContainsKey("data") && productData["data"] is List<Dictionary<string, object>> dataList)
+                {
+                    var data = new Dictionary<string, object>
+                    {
+                        { "quantite", item.TotalQuantity },
+                        { "mois", item.Month }
+                    };
+
+                    dataList.Add(data);
+                }
+            }
+            else
+            {
+                var newProductData = new Dictionary<string, object>
+                {
+                    { "department", item.DepartmentId },
+                    { "data", new List<Dictionary<string, object>> {
+                        new Dictionary<string, object>
+                        {
+                            { "quantite", item.TotalQuantity },
+                            { "mois", item.Month }
+                        }
+                    }}
+                };
+
+                productsByProduct[item.ProductId].Add(newProductData);
+            }
+        }
+
+        var settings = new JsonSerializerSettings
+        {
+            ReferenceLoopHandling = ReferenceLoopHandling.Ignore
+        };
+
+        return JsonConvert.SerializeObject(productsByProduct, settings);
+    }
 
     // [HttpGet]
     // [Route("add-in-request-detail")]

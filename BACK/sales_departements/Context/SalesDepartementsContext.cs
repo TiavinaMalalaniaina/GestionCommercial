@@ -41,8 +41,10 @@ public partial class SalesDepartementsContext : DbContext
     public virtual DbSet<VProductNecessary> VProductNecessarys { get; set; }
     public virtual DbSet<Session> Sessions { get; set; }
 
+    public virtual DbSet<VRequestCurve> VRequestCurves { get; set; }
+
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        => optionsBuilder.UseNpgsql("Host=localhost;Database=sales_departement;Username=postgres;Password=Etu002057");
+        => optionsBuilder.UseNpgsql("Host=localhost;Database=sales_departement;Username=postgres;Password=mdpprom15");
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -79,6 +81,30 @@ public partial class SalesDepartementsContext : DbContext
             // entity.HasOne(d => d.DepartmentHead).WithMany(p => p.Departments)
             //     .HasForeignKey(d => d.DepartmentHeadId)
             //     .HasConstraintName("department_department_head_id_fkey");
+        });
+
+        modelBuilder.Entity<VRequestCurve>(entity =>
+        {
+            entity.HasNoKey();
+            entity.ToTable("v_request_curve");
+
+            entity.Property(e => e.DepartmentId)
+                .HasColumnType("character varying")
+                .HasColumnName("department_id");
+            entity.Property(e => e.ProductId)
+                .HasColumnType("character varying")
+                .HasColumnName("product_id");
+            entity.Property(e => e.DepartmentName)
+                .HasColumnType("character varying")
+                .HasColumnName("department_name");
+            entity.Property(e => e.ProductName)
+                .HasColumnType("character varying")
+                .HasColumnName("product_name");
+            entity.Property(e => e.Month)
+                .HasColumnType("character varying")
+                .HasColumnName("month");
+            entity.Property(e => e.TotalQuantity)
+                .HasColumnName("total_quantity");
         });
 
         modelBuilder.Entity<Employee>(entity =>

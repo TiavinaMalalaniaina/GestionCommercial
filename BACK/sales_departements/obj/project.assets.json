@@ -1482,25 +1482,32 @@
     ]
   },
   "packageFolders": {
-    "/home/mirlin/.nuget/packages/": {}
+    "C:\\Users\\Benji\\.nuget\\packages\\": {},
+    "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "/home/mirlin/ITUniversity/Projets/S5/Mr_Tovo/GESTIONCOMMERCIALE/GestionCommercial/BACK/sales_departements/sales_departements.csproj",
+      "projectUniqueName": "D:\\Documents\\Mr_Tovo\\S5\\GestionCommercial\\BACK\\sales_departements\\sales_departements.csproj",
       "projectName": "sales_departements",
-      "projectPath": "/home/mirlin/ITUniversity/Projets/S5/Mr_Tovo/GESTIONCOMMERCIALE/GestionCommercial/BACK/sales_departements/sales_departements.csproj",
-      "packagesPath": "/home/mirlin/.nuget/packages/",
-      "outputPath": "/home/mirlin/ITUniversity/Projets/S5/Mr_Tovo/GESTIONCOMMERCIALE/GestionCommercial/BACK/sales_departements/obj/",
+      "projectPath": "D:\\Documents\\Mr_Tovo\\S5\\GestionCommercial\\BACK\\sales_departements\\sales_departements.csproj",
+      "packagesPath": "C:\\Users\\Benji\\.nuget\\packages\\",
+      "outputPath": "D:\\Documents\\Mr_Tovo\\S5\\GestionCommercial\\BACK\\sales_departements\\obj\\",
       "projectStyle": "PackageReference",
+      "fallbackFolders": [
+        "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
+      ],
       "configFilePaths": [
-        "/home/mirlin/.nuget/NuGet/NuGet.Config"
+        "C:\\Users\\Benji\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
+        "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
       ],
       "originalTargetFrameworks": [
         "net7.0"
       ],
       "sources": {
-        "/usr/share/dotnet/sdk/7.0.306/Sdks/Microsoft.NET.Sdk.Web/library-packs": {},
+        "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+        "C:\\Program Files\\dotnet\\sdk\\7.0.304\\Sdks\\Microsoft.NET.Sdk.Web\\library-packs": {},
         "https://api.nuget.org/v3/index.json": {}
       },
       "frameworks": {
@@ -1561,7 +1568,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "/usr/share/dotnet/sdk/7.0.306/RuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.304\\RuntimeIdentifierGraph.json"
       }
     }
   }

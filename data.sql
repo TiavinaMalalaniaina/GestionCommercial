@@ -206,6 +206,21 @@ CREATE VIEW "public".v_proforma_moins_disant AS  SELECT v.proforma_details_id,
           WHERE (e.min_price = pd.price)) v
      JOIN proforma p ON (((p.proforma_id)::text = (v.proforma_id)::text)));
 
+SELECT d.department_id,
+    p.product_id,
+    d.department_name,
+    p.product_name,
+    to_char(date_trunc('month', r.created_at), 'Month YYYY') AS month,
+    sum(rd.quantity) AS total_quantity
+   FROM (((request r
+     JOIN request_details rd ON (((rd.request_id) = (r.request_id))))
+     JOIN department d ON (((d.department_id) = (r.department_id))))
+     JOIN product p ON (((p.product_id) = (rd.product_id))))
+  WHERE (r.is_validated = true)
+  GROUP BY d.department_id, (to_char(date_trunc('month', r.created_at), 'Month YYYY')), p.product_id
+  ORDER BY (to_char(date_trunc('month', r.created_at), 'Month YYYY')) DESC
+
+
 INSERT INTO "public".person( person_id, first_name, last_name, date_of_birth, gender, phone_number, address ) VALUES ( 'PER00001', 'RATIATIANA', 'Jean Mirlin', '2023-10-20', 'M', '0348262182', 'Ambohijanaka');
 INSERT INTO "public".person( person_id, first_name, last_name, date_of_birth, gender, phone_number, address ) VALUES ( 'PER00002', 'RAMIANDRISOA', 'Tiavina', '2023-01-20', 'M', '+261 32 500 48', 'Tanjombato');
 INSERT INTO "public".person( person_id, first_name, last_name, date_of_birth, gender, phone_number, address ) VALUES ( 'PER00003', 'RAMAROSON', 'Benjamina', '2023-10-04', 'M', '+261 02 591 02', 'Iavoloha');
