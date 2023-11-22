@@ -206,7 +206,7 @@ CREATE VIEW "public".v_proforma_moins_disant AS  SELECT v.proforma_details_id,
           WHERE (e.min_price = pd.price)) v
      JOIN proforma p ON (((p.proforma_id)::text = (v.proforma_id)::text)));
 
-SELECT d.department_id,
+CREATE VIEW v_request_curve AS SELECT d.department_id,
     p.product_id,
     d.department_name,
     p.product_name,

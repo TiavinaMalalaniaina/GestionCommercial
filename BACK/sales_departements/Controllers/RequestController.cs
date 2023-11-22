@@ -142,12 +142,12 @@ public class RequestController : Controller
 
         foreach (var item in allData)
         {
-            if (!productsByProduct.ContainsKey(item.ProductId))
+            if (!productsByProduct.ContainsKey(item.ProductName))
             {
-                productsByProduct[item.ProductId] = new List<Dictionary<string, object>>();
+                productsByProduct[item.ProductName] = new List<Dictionary<string, object>>();
             }
 
-            var productData = productsByProduct[item.ProductId].FirstOrDefault(p => p.ContainsKey("department") && p["department"].Equals(item.DepartmentId));
+            var productData = productsByProduct[item.ProductName].FirstOrDefault(p => p.ContainsKey("department") && p["department"].Equals(item.DepartmentName));
 
             if (productData != null)
             {
@@ -166,7 +166,7 @@ public class RequestController : Controller
             {
                 var newProductData = new Dictionary<string, object>
                 {
-                    { "department", item.DepartmentId },
+                    { "department", item.DepartmentName },
                     { "data", new List<Dictionary<string, object>> {
                         new Dictionary<string, object>
                         {
@@ -176,7 +176,7 @@ public class RequestController : Controller
                     }}
                 };
 
-                productsByProduct[item.ProductId].Add(newProductData);
+                productsByProduct[item.ProductName].Add(newProductData);
             }
         }
 
